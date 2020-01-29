@@ -1,0 +1,3 @@
+rhoReactingCentralFoam.C
+
+EXE = $(FOAM_USER_APPBIN)/rhoReactingCentralFoam
