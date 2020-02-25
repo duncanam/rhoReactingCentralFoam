@@ -10,10 +10,11 @@ surfaceScalarField sigmaDotU
 
 solve
 (
-      fvm::ddt(rhoE)
-    + fvc::div(phiEp)
-    - fvc::div(sigmaDotU)
-    - reaction->Qdot()
+    fvm::ddt(rhoE)
+  + fvc::div(phiEp)
+  - fvc::div(sigmaDotU)
+  ==
+    reaction->Qdot()
 );
 
 e = rhoE/rho - 0.5*magSqr(U);
@@ -23,11 +24,13 @@ rhoE.boundaryFieldRef() == rho.boundaryField()*(e.boundaryField() + 0.5*magSqr(U
 
 if (!inviscid)
 {
-    solve
+    fvScalarMatrix eEqn
     (
         fvm::ddt(rho, e) - fvc::ddt(rho, e)
       - fvm::laplacian(turbulence->alphaEff(), e)
     );
+    eEqn.solve("e");
+
     thermo.correct();
     rhoE = rho*(e + 0.5*magSqr(U));
 }

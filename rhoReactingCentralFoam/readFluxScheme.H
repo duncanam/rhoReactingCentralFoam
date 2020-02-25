@@ -1,5 +1,5 @@
 word fluxScheme("Kurganov");
-if (centralDict.readIfPresent("fluxScheme", fluxScheme))
+if (mesh.schemesDict().readIfPresent("fluxScheme", fluxScheme))
 {
     if ((fluxScheme == "Tadmor") || (fluxScheme == "Kurganov"))
     {

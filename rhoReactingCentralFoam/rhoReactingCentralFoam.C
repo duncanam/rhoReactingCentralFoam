@@ -45,6 +45,9 @@ Description
 #include "localEulerDdtScheme.H"
 #include "fvcSmooth.H"
 #include "fvOptions.H"
+#include "gaussConvectionScheme.H"
+#include "CMULES.H"
+#include "slicedSurfaceFields.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -56,12 +59,10 @@ int main(int argc, char *argv[])
 
     #include "createTime.H"
     #include "createDynamicFvMesh.H"
-
+    #include "createControls.H"
     #include "createFields.H"
     #include "createFieldRefs.H"
     #include "createFvOptions.H"
-    #include "createTimeControls.H"
-    #include "createRDeltaT.H"
 
     // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -72,15 +73,20 @@ int main(int argc, char *argv[])
     // Courant numbers used to adjust the time-step
     scalar CoNum = 0.0;
     scalar meanCoNum = 0.0;
+    scalar acousticCoNum = 0.0;
+    scalar startTimeIndex = runTime.timeIndex();
 
     Info<< "\nStarting time loop\n" << endl;
 
     while (runTime.run())
     {
-        #include "readTimeControls.H"
+        #include "readControls.H"
 
         // Do any mesh changes
-        mesh.update();
+        if (runTime.timeIndex() - startTimeIndex > 0)
+	{
+            mesh.update();
+        }
 
         if (!LTS)
         {
@@ -151,7 +157,7 @@ int main(int argc, char *argv[])
         // estimated by the central scheme
         amaxSf = max(mag(aphiv_pos), mag(aphiv_neg));
 
-        #include "centralCourantNo.H"
+        #include "CourantNo.H"
 
         if (LTS)
         {

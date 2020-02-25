@@ -5,20 +5,20 @@
     volScalarField rDeltaT0("rDeltaT0", rDeltaT);
 
     // Maximum flow Courant number
-    scalar maxCo(centralDict.lookupOrDefault<scalar>("maxCo", 0.5));
+    scalar maxCo(runTime.controlDict().lookupOrDefault<scalar>("maxCo", 0.5));
 
     // Maximum time scale
-    scalar maxDeltaT(centralDict.lookupOrDefault<scalar>("maxDeltaT", GREAT));
+    scalar maxDeltaT(runTime.controlDict().lookupOrDefault<scalar>("maxDeltaT", GREAT));
 
     // Smoothing parameter (0-1) when smoothing iterations > 0
-    scalar rDeltaTSmoothingCoeff(centralDict.lookupOrDefault<scalar>("rDeltaTSmoothingCoeff",0.02));
+    scalar rDeltaTSmoothingCoeff(runTime.controlDict().lookupOrDefault<scalar>("rDeltaTSmoothingCoeff",0.02));
 
     // Damping coefficient (1-0)
-    scalar rDeltaTDampingCoeff(centralDict.lookupOrDefault<scalar>("rDeltaTDampingCoeff",0.9));
+    scalar rDeltaTDampingCoeff(runTime.controlDict().lookupOrDefault<scalar>("rDeltaTDampingCoeff",0.9));
 
     // Maximum change in cell temperature per iteration
     // (relative to previous value)
-    scalar alphaTemp(centralDict.lookupOrDefault("alphaTemp",1));
+    scalar alphaTemp(runTime.controlDict().lookupOrDefault("alphaTemp",1));
 
     {
         // Set the reciprocal time-step from the local Courant number
