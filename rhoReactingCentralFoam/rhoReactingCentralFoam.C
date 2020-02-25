@@ -56,10 +56,12 @@ int main(int argc, char *argv[])
 
     #include "createTime.H"
     #include "createDynamicFvMesh.H"
-    #include "createControls.H"
+
     #include "createFields.H"
     #include "createFieldRefs.H"
     #include "createFvOptions.H"
+    #include "createTimeControls.H"
+    #include "createRDeltaT.H"
 
     // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -70,25 +72,12 @@ int main(int argc, char *argv[])
     // Courant numbers used to adjust the time-step
     scalar CoNum = 0.0;
     scalar meanCoNum = 0.0;
-    scalar acousticCoNum = 0.0;
 
     Info<< "\nStarting time loop\n" << endl;
 
     while (runTime.run())
     {
-        #include "readControls.H"
-
-		// Indicators for refinement. Note: before runTime++
-        // only for postprocessing reasons. Grabbed from 
-		// PDRFoamAutoRefine.C.
-        tmp<volScalarField> tmagGradP = mag(fvc::grad(p));
-        volScalarField normalisedGradP
-        (
-            "normalisedGradP",
-            tmagGradP()/max(tmagGradP())
-        );
-        normalisedGradP.writeOpt() = IOobject::AUTO_WRITE;
-        tmagGradP.clear();
+        #include "readTimeControls.H"
 
         // Do any mesh changes
         mesh.update();
@@ -162,7 +151,7 @@ int main(int argc, char *argv[])
         // estimated by the central scheme
         amaxSf = max(mag(aphiv_pos), mag(aphiv_neg));
 
-        #include "CourantNo.H"
+        #include "centralCourantNo.H"
 
         if (LTS)
         {

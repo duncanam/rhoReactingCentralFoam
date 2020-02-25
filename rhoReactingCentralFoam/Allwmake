@@ -2,7 +2,6 @@
 cd ${0%/*} || exit 1    # Run from this directory
 set -x
 
-#(wmake libso BCs && wmake)
-wmake
+(wmake libso BCs && wmake)
 
 # ----------------------------------------------------------------- end-of-file

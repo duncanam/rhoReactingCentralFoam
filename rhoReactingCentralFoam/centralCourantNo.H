@@ -1,61 +1,45 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     | Website:  https://openfoam.org
-    \\  /    A nd           | Copyright (C) 2011-2018 OpenFOAM Foundation
+   \\    /   O peration     |
+    \\  /    A nd           | Copyright (C) 2011-2015 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
     This file is part of OpenFOAM.
+
     OpenFOAM is free software: you can redistribute it and/or modify it
     under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
+
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
     FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
     for more details.
+
     You should have received a copy of the GNU General Public License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
+
 Global
-    setDeltaT
+    centralCourantNo
+
 Description
-    Reset the timestep to maintain a constant maximum courant Number.
-    Reduction of time-step is immediate but increase is damped to avoid
-    unstable oscillations.
+    Calculates the mean and maximum wave speed based Courant Numbers.
+
 \*---------------------------------------------------------------------------*/
 
-if (adjustTimeStep && useAcousticCo)
+if (mesh.nInternalFaces())
 {
-    scalar maxDeltaTFact =
-        min(maxCo/(CoNum + small), maxAcousticCo/(acousticCoNum + small));
+    scalarField sumAmaxSf(fvc::surfaceSum(amaxSf)().internalField());
 
-    scalar deltaTFact = min(min(maxDeltaTFact, 1.0 + 0.1*maxDeltaTFact), 1.2);
+    CoNum = 0.5*gMax(sumAmaxSf/mesh.V().field())*runTime.deltaTValue();
 
-    runTime.setDeltaT
-    (
-        min
-        (
-            deltaTFact*runTime.deltaTValue(),
-            maxDeltaT
-        )
-    );
-
-    Info<< "deltaT = " <<  runTime.deltaTValue() << endl;
+    meanCoNum =
+        0.5*(gSum(sumAmaxSf)/gSum(mesh.V().field()))*runTime.deltaTValue();
 }
-else if (adjustTimeStep)
-{
-    scalar maxDeltaTFact = maxCo/(CoNum + small);
-    scalar deltaTFact = min(min(maxDeltaTFact, 1.0 + 0.1*maxDeltaTFact), 1.2);
 
-    runTime.setDeltaT
-    (
-        min
-        (
-            deltaTFact*runTime.deltaTValue(),
-            maxDeltaT
-        )
-    );
-}
+Info<< "Mean and max Courant Numbers = "
+    << meanCoNum << " " << CoNum << endl;
 
 // ************************************************************************* //

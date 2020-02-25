@@ -13,6 +13,7 @@ solve
       fvm::ddt(rhoE)
     + fvc::div(phiEp)
     - fvc::div(sigmaDotU)
+    - reaction->Qdot()
 );
 
 e = rhoE/rho - 0.5*magSqr(U);
@@ -26,7 +27,6 @@ if (!inviscid)
     (
         fvm::ddt(rho, e) - fvc::ddt(rho, e)
       - fvm::laplacian(turbulence->alphaEff(), e)
-      - reaction->Qdot()
     );
     thermo.correct();
     rhoE = rho*(e + 0.5*magSqr(U));

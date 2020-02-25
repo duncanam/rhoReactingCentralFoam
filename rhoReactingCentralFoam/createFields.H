@@ -1,6 +1,4 @@
-#include "createRDeltaT.H"
-
-Info<< "Reading thermophysical properties\n" << endl;
+Info << "\nInitializing Fields" << nl << endl;
 
 autoPtr<psiReactionThermo> pThermo(psiReactionThermo::New(mesh));
 psiReactionThermo& thermo = pThermo();
@@ -156,4 +154,6 @@ volScalarField Qdot
     mesh,
     dimensionedScalar("Qdot", dimEnergy/dimVolume/dimTime, 0.0)
 );
+
+dictionary centralDict = mesh.solutionDict().subDict("CENTRAL");
 

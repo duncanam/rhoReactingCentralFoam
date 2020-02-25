@@ -14,22 +14,19 @@
 	        surfaceScalarField Yi_neg = fvc::interpolate(Yi, neg, "reconstruct(Yi)");
 	        surfaceScalarField phiYi("phiYi", aphiv_pos*rho_pos*Yi_pos + aphiv_neg*rho_neg*Yi_neg);
 
-	        solve(fvm::ddt(rhoYi) + fvc::div(phiYi));
+	        solve(fvm::ddt(rhoYi) + fvc::div(phiYi) - reaction->R(Yi));
 
 	        Yi.ref() = rhoYi()/rho();
 	        Yi.correctBoundaryConditions();
 	        Yi.max(0.0);
 	        rhoYi.boundaryFieldRef() == rho.boundaryField()*Yi.boundaryField();
 
-            if (!inviscid)
+        if (!inviscid)
 	    {
                 solve
                 (
                      fvm::ddt(rho,Yi) - fvc::ddt(rho,Yi)
-                   + fvm::div(phi,Yi) - fvc::div(phi,Yi)
                    - fvm::laplacian(turbulence->muEff(), Yi)
-                    ==
-                      reaction->R(Yi)
                 );
                 rhoYi = rho*Yi;
             }
