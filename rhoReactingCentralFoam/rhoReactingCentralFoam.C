@@ -82,6 +82,20 @@ int main(int argc, char *argv[])
     {
         #include "readControls.H"
 
+		
+		// Indicators for refinement. Note: before runTime++
+        // only for postprocessing reasons. Grabbed from 
+		// PDRFoamAutoRefine.C.
+        tmp<volScalarField> tmagGradP = mag(fvc::grad(p));
+        volScalarField normalisedGradP
+        (
+            "normalisedGradP",
+            tmagGradP()/max(tmagGradP())
+        );
+        normalisedGradP.writeOpt() = IOobject::AUTO_WRITE;
+        tmagGradP.clear();
+
+
         // Do any mesh changes
         if (runTime.timeIndex() - startTimeIndex > 0)
 	{
