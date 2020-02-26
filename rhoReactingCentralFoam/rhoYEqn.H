@@ -18,12 +18,7 @@ tmp<fv::convectionScheme<scalar>> mvConvection
     {
         if (i != inertIndex && composition.active(i))
         {
-            //volScalarField& rhoYi = rhoY[i];
 	    volScalarField& Yi = Y[i];
-
-	    //surfaceScalarField Yi_pos = interpolate(Yi, pos, "reconstruct(Yi)");
-	    //surfaceScalarField Yi_neg = interpolate(Yi, neg, "reconstruct(Yi)");
-            //surfaceScalarField phiYi("phiYi", aphiv_pos*rho_pos*Yi_pos + aphiv_neg*rho_neg*Yi_neg);
 
             fvScalarMatrix YiEqn
             (

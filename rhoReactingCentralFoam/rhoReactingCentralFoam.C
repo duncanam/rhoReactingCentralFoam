@@ -82,10 +82,10 @@ int main(int argc, char *argv[])
     {
         #include "readControls.H"
 
-		
+
 		// Indicators for refinement. Note: before runTime++
         // only for postprocessing reasons. Grabbed from 
-		// PDRFoamAutoRefine.C.
+        // PDRFoamAutoRefine.C.
         tmp<volScalarField> tmagGradP = mag(fvc::grad(p));
         volScalarField normalisedGradP
         (
