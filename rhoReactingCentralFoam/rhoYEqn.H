@@ -1,3 +1,14 @@
+tmp<fv::convectionScheme<scalar>> mvConvection
+(
+    fv::convectionScheme<scalar>::New
+    (
+        mesh,
+        fields,
+        phi,
+        mesh.divScheme("div(phi,Yi_h)")
+    )
+);
+
 {
     reaction->correct();
     Qdot = reaction->Qdot();
@@ -7,35 +18,23 @@
     {
         if (i != inertIndex && composition.active(i))
         {
-            volScalarField& rhoYi = rhoY[i];
-	        volScalarField& Yi = Y[i];
+	    volScalarField& Yi = Y[i];
 
-	        surfaceScalarField Yi_pos = fvc::interpolate(Yi, pos, "reconstruct(Yi)");
-	        surfaceScalarField Yi_neg = fvc::interpolate(Yi, neg, "reconstruct(Yi)");
-	        surfaceScalarField phiYi("phiYi", aphiv_pos*rho_pos*Yi_pos + aphiv_neg*rho_neg*Yi_neg);
-
-	        solve(fvm::ddt(rhoYi) + fvc::div(phiYi));
-
-	        Yi.ref() = rhoYi()/rho();
-	        Yi.correctBoundaryConditions();
-	        Yi.max(0.0);
-	        rhoYi.boundaryFieldRef() == rho.boundaryField()*Yi.boundaryField();
-
+            fvScalarMatrix YiEqn
+            (
+                fvm::ddt(rho, Yi)
+              + mvConvection->fvmDiv(phi, Yi)
+	      - reaction->R(Yi)
+            );
+	    
             if (!inviscid)
 	    {
-                solve
-                (
-                     fvm::ddt(rho,Yi) - fvc::ddt(rho,Yi)
-                   + fvm::div(phi,Yi) - fvc::div(phi,Yi)
-                   - fvm::laplacian(turbulence->muEff(), Yi)
-                    ==
-                      reaction->R(Yi)
-                );
-                rhoYi = rho*Yi;
+                YiEqn -= fvm::laplacian(turbulence->muEff(), Yi);
             }
 
-            Yi.correctBoundaryConditions();
+	    YiEqn.solve("Yi");
             Yi.max(0.0);
+	    Yi.correctBoundaryConditions();
             Yt += Yi;
         }
     }

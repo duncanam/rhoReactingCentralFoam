@@ -45,6 +45,9 @@ Description
 #include "localEulerDdtScheme.H"
 #include "fvcSmooth.H"
 #include "fvOptions.H"
+#include "gaussConvectionScheme.H"
+#include "CMULES.H"
+#include "slicedSurfaceFields.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -71,6 +74,7 @@ int main(int argc, char *argv[])
     scalar CoNum = 0.0;
     scalar meanCoNum = 0.0;
     scalar acousticCoNum = 0.0;
+    scalar startTimeIndex = runTime.timeIndex();
 
     Info<< "\nStarting time loop\n" << endl;
 
@@ -78,8 +82,25 @@ int main(int argc, char *argv[])
     {
         #include "readControls.H"
 
+
+		// Indicators for refinement. Note: before runTime++
+        // only for postprocessing reasons. Grabbed from 
+        // PDRFoamAutoRefine.C.
+        tmp<volScalarField> tmagGradP = mag(fvc::grad(p));
+        volScalarField normalisedGradP
+        (
+            "normalisedGradP",
+            tmagGradP()/max(tmagGradP())
+        );
+        normalisedGradP.writeOpt() = IOobject::AUTO_WRITE;
+        tmagGradP.clear();
+
+
         // Do any mesh changes
-        mesh.update();
+        if (runTime.timeIndex() - startTimeIndex > 0)
+	{
+            mesh.update();
+        }
 
         if (!LTS)
         {

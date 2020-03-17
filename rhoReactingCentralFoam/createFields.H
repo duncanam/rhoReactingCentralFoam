@@ -120,27 +120,6 @@ forAll (Y, i)
 {
     fields.add(Y[i]);
 }
-
-PtrList<volScalarField> rhoY(Y.size());
-forAll (Y, i)
-{
-    rhoY.set
-    (
-        i,
-        new volScalarField
-        (
-            IOobject
-            (
-                "rhoYi",
-                runTime.timeName(),
-		        mesh,
-                IOobject::NO_READ,
-                IOobject::NO_WRITE
-            ),
-            rho*Y[i]
-        )
-    );
-}
 fields.add(thermo.he());
 
 volScalarField Qdot
