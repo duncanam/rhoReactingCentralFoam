@@ -1,0 +1,55 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  7
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volVectorField;
+    location    "0";
+    object      U;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+dimensions      [0 1 -1 0 0 0 0];
+
+internalField   uniform (0 0 0);
+
+boundaryField
+{
+	inlet
+	{
+	    type            slip;
+	}
+	top
+	{
+	    type            slip;
+	}
+	bottom
+        {
+            type            slip;
+        }
+	outlet
+	{
+	    type        waveTransmissive;
+	    value		uniform (0 0 0);
+	    field		U;
+	    gamma		1.29; // Air is 1.4, H2 is 1.41
+	    phi			phi;
+	    //rho			thermo:rho;
+	    psi			thermo:psi;
+	    lInf		1;
+	    fieldInf	(0 0 0);
+	}
+	frontAndBack
+	{
+	    type            slip;
+	}
+}
+
+
+// ************************************************************************* //
