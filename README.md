@@ -1,11 +1,14 @@
 # rhoReactingCentralFoam
 An OpenFOAM solver that combines rhoCentralFoam and rhoReactingFoam for high-speed reactive flows. Tested extensively for ability to model detonations. 
 
----
-
 This solver was originally created by Caelan Lapointe at the University of Colorado Boulder. 
 
 ---
+**Detonation with adaptive meshing:**
+
+![detonation with AMR](https://github.com/duncanam/thesis/blob/master/doc/figs/amr_cells.png)
+
+
 
 ## Example Usage
 Look in the example directory for an example of a detonation being modeled, with adaptive meshing (AMR), adaptive time stepping tracking both central and acoustic time stepping (see `controlDict`), and parallelized with MPI. 
